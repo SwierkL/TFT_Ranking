@@ -63,7 +63,7 @@ if (tftEntry && tftEntry.tier && tftEntry.rank) {
 fetchTFTData();
 setInterval(fetchTFTData, 5 * 60 * 1000); // odświeżanie co 5 minut
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'docs')));
 
 app.get('/api/status', (req, res) => {
   res.json(latestData);
