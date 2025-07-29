@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>TFT Ranga</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(135deg, #1e1e2f, #2e2e4f);
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      height: 100vh;
+      margin: 0;
+      padding-top: 60px;
+    }
+
+    h1 {
+      font-weight: 700;
+      margin-bottom: 40px;
+      letter-spacing: 1.5px;
+      text-shadow: 0 0 10px #00f;
+    }
+
+    #rank-container {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 15px;
+      padding: 30px 50px;
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      box-shadow: 0 0 20px #00f;
+      min-width: 320px;
+    }
+
+    #rank-icon {
+      width: 80px;
+      height: 80px;
+      image-rendering: pixelated;
+      filter: drop-shadow(0 0 5px #00f);
+    }
+
+    #rank-text {
+      font-size: 2.2em;
+      letter-spacing: 1.2px;
+      text-shadow: 0 0 6px #00f;
+    }
+
+    #lp {
+      font-size: 1.4em;
+      color: #00f8ff;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ranga gracza: wearwolf#wolf</h1>
+  <div id="rank-container">
+    <img id="rank-icon" src="" alt="Ikona rangi" />
+    <div>
+      <div id="rank-text">Ładowanie...</div>
+      <div id="lp"></div>
+    </div>
+  </div>
+
+  <script>
+    const tierIcons = {
+      IRON: '/Gallery/Iron.png',
+      BRONZE: '/Gallery/Bronze.png',
+      SILVER: '/Gallery/Silver.png',
+      GOLD: '/Gallery/Gold.png',
+      PLATINUM: '/Gallery/Platinum.png',
+      EMERALD: '/Gallery/Emerald.png',
+      DIAMOND: '/Gallery/Diamond.png',
+      MASTER: '/Gallery/Master.png',
+      GRANDMASTER: '/Gallery/Grandmaster.png',
+      CHALLENGER: '/Gallery/Challenger.png',
+      UNRANKED: '/Gallery/Iron.png', // iron jako domyślny
+    };
+
+    async function fetchRank() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+
+        const icon = tierIcons[data.tier] || tierIcons.UNRANKED;
+        document.getElementById('rank-icon').src = icon;
+
+        if (data.tier === 'UNRANKED' || !data.tier) {
+          document.getElementById('rank-text').textContent = 'Brak rangi w TFT';
+          document.getElementById('lp').textContent = '';
+        } else {
+          document.getElementById('rank-text').textContent = `${data.tier} ${data.rank}`;
+          document.getElementById('lp').textContent = `${data.lp} LP`;
+        }
+      } catch (e) {
+        document.getElementById('rank-text').textContent = 'Błąd ładowania danych';
+        document.getElementById('lp').textContent = '';
+        console.error(e);
+      }
+    }
+
+    fetchRank();
+    setInterval(fetchRank, 5 * 60 * 1000);
+  </script>
+ <script>
+  const secretSequence = ['t', 'f', 't']; // Klawisze aktywacyjne
+  let inputBuffer = [];
+
+  window.addEventListener('keydown', (e) => {
+    inputBuffer.push(e.key.toLowerCase());
+
+    // Ograniczenie długości bufora
+    if (inputBuffer.length > secretSequence.length) {
+      inputBuffer.shift();
+    }
+
+    if (secretSequence.every((k, i) => inputBuffer[i] === k)) {
+      inputBuffer = []; // Czyszczenie bufora żeby nie otwierało w kółko filmiku
+
+      // Otwieranie nowego okna
+      window.open(
+        'https://www.youtube.com/embed/ScMzIvxBSi4?autoplay=1',
+        'youtubePopup',
+        'width=800,height=450,resizable=yes,scrollbars=no'
+      );
+    }
+  });
+</script>
+
+
+</body>
+</html>
