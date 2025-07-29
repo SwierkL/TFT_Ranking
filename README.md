@@ -1,2 +1,2 @@
-.env
+Struktura pliku .env (Zakodowane Riot Api Key)
 RIOT_API_KEY=RGAPI-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
