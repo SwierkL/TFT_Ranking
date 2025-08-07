@@ -24,22 +24,16 @@ const riotRes = await axios.get(
       { headers: { "X-Riot-Token": RIOT_API_KEY } }
     );
     const puuid = riotRes.data.puuid;
-      // console.log("🔑 PUUID gracza:", puuid);
+       console.log("🔑 PUUID gracza:", puuid);
 
-    // 2. puuid → summonerId
-    const summonerRes = await axios.get(
-      `https://eun1.api.riotgames.com/tft/summoner/v1/summoners/by-puuid/${puuid}`,
-      { headers: { "X-Riot-Token": RIOT_API_KEY } }
-    );
-    const summonerId = summonerRes.data.id;
-
-    // 3. summonerId → TFT ranking
+    // 2. puuid → TFT ranking
     const rankRes = await axios.get(
       `https://eun1.api.riotgames.com/tft/league/v1/by-puuid/${puuid}`,
       { headers: { "X-Riot-Token": RIOT_API_KEY } }
     );
 
     const tftEntry = rankRes.data.find(entry => entry.queueType === "RANKED_TFT");
+    
 
 if (tftEntry && tftEntry.tier && tftEntry.rank) {
   latestData = {
