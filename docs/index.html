@@ -25,6 +25,33 @@
       letter-spacing: 1.5px;
       text-shadow: 0 0 10px #00f;
     }
+h2 {
+  margin-top: 50px;
+  text-shadow: 0 0 6px #0ff;
+}
+
+#match-history {
+  width: 80%;
+  max-width: 500px;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 0 10px #00f;
+}
+
+#match-history th, #match-history td {
+  padding: 12px;
+  text-align: center;
+  border-bottom: 1px solid #444;
+}
+
+#match-history tr.good {
+  background-color: rgba(0, 255, 0, 0.15);
+}
+
+#match-history tr.bad {
+  background-color: rgba(255, 0, 0, 0.15);
+}
+    
 
     #rank-container {
       background: rgba(0, 0, 0, 0.5);
@@ -68,6 +95,17 @@
     </div>
   </div>
 
+  <h2>Ostatnie 5 meczów</h2>
+<table id="match-history">
+  <thead>
+    <tr>
+      <th>Miejsce</th>
+      <th>Data</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
   <script>
     const tierIcons = {
       IRON: '/Gallery/Iron.png',
@@ -108,6 +146,39 @@
     fetchRank();
     setInterval(fetchRank, 5 * 60 * 1000);
   </script>
+  <script>
+  async function fetchMatchHistory() {
+    try {
+      const res = await fetch('/api/matches');
+      const matches = await res.json();
+
+      const tbody = document.querySelector('#match-history tbody');
+      tbody.innerHTML = '';
+
+      matches.forEach(match => {
+        const tr = document.createElement('tr');
+        tr.classList.add(match.placement <= 4 ? 'good' : 'bad');
+
+        const placementTd = document.createElement('td');
+        placementTd.textContent = match.placement;
+
+        const dateTd = document.createElement('td');
+        const date = new Date(match.time);
+        dateTd.textContent = date.toLocaleString('pl-PL');
+
+        tr.appendChild(placementTd);
+        tr.appendChild(dateTd);
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      console.error("Błąd podczas ładowania historii meczów:", err);
+    }
+  }
+
+  fetchMatchHistory();
+  setInterval(fetchMatchHistory, 5 * 60 * 1000);
+</script>
+
  <script>
   const secretSequence = ['t', 'f', 't']; // Klawisze aktywacyjne
   let inputBuffer = [];

@@ -4,6 +4,7 @@ require('dotenv').config();
 const path = require('path');
 const app = express();
 const port = 3000;
+let latestMatches = [];
 
 const RIOT_API_KEY = process.env.RIOT_API_KEY;
 
@@ -49,6 +50,28 @@ if (tftEntry && tftEntry.tier && tftEntry.rank) {
   };
 }
 
+      // MATCH HISTORY
+    const matchIdsRes = await axios.get(
+      `https://europe.api.riotgames.com/tft/match/v1/matches/by-puuid/${puuid}/ids?count=5`,
+      { headers: { "X-Riot-Token": RIOT_API_KEY } }
+    );
+
+    const matchDetailsPromises = matchIdsRes.data.map(id =>
+      axios.get(`https://europe.api.riotgames.com/tft/match/v1/matches/${id}`, {
+        headers: { "X-Riot-Token": RIOT_API_KEY }
+      })
+    );
+
+    const matchDetails = await Promise.all(matchDetailsPromises);
+
+    latestMatches = matchDetails.map(match => {
+      const player = match.data.info.participants.find(p => p.puuid === puuid);
+      return {
+        placement: player.placement,
+        time: match.data.info.game_datetime
+      };
+    });
+
   } catch (err) {
     console.error("Błąd przy pobieraniu danych:", err.response?.data || err.message);
   }
@@ -62,6 +85,11 @@ app.use(express.static(path.join(__dirname, 'docs')));
 app.get('/api/status', (req, res) => {
   res.json(latestData);
 });
+
+app.get('/api/matches', (req, res) => {
+  res.json(latestMatches);
+});
+
 
 app.listen(port, () => {
   console.log(`Serwer działa na http://localhost:${port}`);
